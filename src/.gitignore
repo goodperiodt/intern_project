@@ -8,6 +8,7 @@
 ### Application Configuration ###
 # Local application config - should not be committed
 application.properties
+application.yml
 application-*.properties
 
 # Ignore all properties except Gradle wrapper config
