@@ -12,7 +12,19 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
 
     @Override
-    public User save(User user) {
+    public User register(User user) {
         return userJpaRepository.save(user);
     }
+
+    @Override
+    public User findByUserEmail(String email) {
+
+        if(!userJpaRepository.existsUserByEmail(email))
+            throw new IllegalArgumentException("아이디가 존재하지 않습니다.");
+
+        return userJpaRepository.findUserByEmail(email);
+    }
+
+
+
 }

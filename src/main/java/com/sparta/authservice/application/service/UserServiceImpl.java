@@ -2,7 +2,9 @@ package com.sparta.authservice.application.service;
 
 import com.sparta.authservice.application.dto.response.SignUpResponse;
 import com.sparta.authservice.domain.entity.User;
-import com.sparta.authservice.domain.repository.UserRepository;
+import com.sparta.authservice.infrastructure.repository.UserRepositoryImpl;
+import com.sparta.authservice.infrastructure.security.JwtTokenProvider;
+import com.sparta.authservice.presentation.dto.request.LoginRequest;
 import com.sparta.authservice.presentation.dto.request.SignUpRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,10 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     @Transactional
@@ -28,13 +31,29 @@ public class UserServiceImpl implements UserService{
                 encodedPassword,
                 request.getNickname());
 
-        User savedUser = userRepository.save(user);
+        User registered = userRepository.register(user);
 
         return SignUpResponse.of(
-                savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getNickname(),
-                savedUser.getCreatedAt()
+                registered.getId(),
+                registered.getEmail(),
+                registered.getNickname(),
+                registered.getCreatedAt()
         );
+    }
+
+    @Override
+    public String login(LoginRequest request) {
+        User foundUser = userRepository.findByUserEmail(request.getEmail());
+        matchesPassword(foundUser, request.getPassword());
+
+        return jwtTokenProvider.createAccessToken(
+                foundUser.getEmail(),
+                foundUser.getRole()
+        );
+    }
+
+    private void matchesPassword(User foundUser, String password) {
+        boolean matches = passwordEncoder.matches(password, foundUser.getPassword());
+        if(!matches) throw new IllegalArgumentException("비밀번호를 다시 확인해주세요");
     }
 }
