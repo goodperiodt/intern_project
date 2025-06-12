@@ -1,5 +1,6 @@
 package com.sparta.authservice.presentation.controller;
 
+import com.sparta.authservice.application.dto.response.LoginResponse;
 import com.sparta.authservice.application.dto.response.SignUpResponse;
 import com.sparta.authservice.application.service.UserServiceImpl;
 import com.sparta.authservice.presentation.dto.request.LoginRequest;
@@ -13,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.sparta.authservice.infrastructure.security.JwtTokenProvider.AUTHORIZATION_HEADER;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,10 +29,9 @@ public class UserController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request,
-                                      HttpServletResponse httpServletRequest) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         String token = userService.login(request);
-        httpServletRequest.setHeader(AUTHORIZATION_HEADER, token);
-        return ResponseEntity.noContent().build();
+        LoginResponse response = LoginResponse.of(token);
+        return ResponseEntity.ok().body(response);
     }
 }
