@@ -31,4 +31,10 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean existsUserByEmail(String email) {
         return userJpaRepository.existsUserByEmail(email);
     }
+
+    @Override
+    public User findUserById(Long userId) {
+        return userJpaRepository.findById(userId)
+                .orElseThrow(() ->new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
 }
