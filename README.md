@@ -18,7 +18,8 @@ Spring Boot 기반 인증 및 권한 관리 서비스입니다.
 ## 실행 방법
 
 1. 프로젝트를 클론하거나 다운로드 받습니다.
-2. `application.yml`에서 JWT 시크릿 키 등 환경 설정을 확인합니다.
+2. `application.yml`에서 JWT 시크릿 키 등 환경 설정을 확인합니다.</br>
+   맨 아래 application.yml 파일 내용을 확인하세요.
 3. IDE에서 `AuthserviceApplication` 클래스를 실행합니다.
 4. 애플리케이션 구동 후, 아래 URL로 접속하여 Swagger UI를 확인할 수 있습니다</br>
    http://localhost:8080/swagger-ui/index.html
@@ -75,4 +76,30 @@ infrastructure.repository : JPA 기반 사용자 저장소 구현체</br>
 infrastructure.security : JWT 생성 및 검증, 인증 필터, 시큐리티 설정</br>
 application.service : 비즈니스 로직 처리</br>
 presentation.controller : REST API 컨트롤러 및 DTO</br>
+
+### application.yml 파일
+
+```yaml
+spring:
+  application:
+    name: auth-service
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    open-in-view: false
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: auth
+    password:
+
+security:
+  jwt:
+    secret: EmVW5EwQoEkcwJi7fbf0TeG29WYfVRux/iLgXkgGeSr1KlI1duU6ekZC2nTcmcv7EWoiD280bOYUfu35DlcqMQ==
+```
 
