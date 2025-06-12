@@ -8,4 +8,5 @@ public interface UserService {
 
     SignUpResponse signUp(SignUpRequest request);
     String login(LoginRequest request);
+    void grantAdminRole(Long userId);
 }

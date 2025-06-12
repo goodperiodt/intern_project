@@ -65,6 +65,13 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    @Transactional
+    public void grantAdminRole(Long userId) {
+        User user = userRepository.findUserById(userId);
+        user.changeRoleToAdmin();
+    }
+
     private void matchesPassword(User foundUser, String password) {
 
         boolean matches = passwordEncoder.matches(
