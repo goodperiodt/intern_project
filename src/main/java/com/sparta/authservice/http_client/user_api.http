@@ -1,0 +1,23 @@
+### @name 회원가입
+POST http://localhost:8080/sign-up
+Content-Type: application/json
+
+{
+  "email": "test2@naver.com",
+  "password": "test2",
+  "nickname": "test2"
+}
+
+### @name 로그인
+POST http://localhost:8080/sign-in
+Content-Type: application/json
+
+{
+  "email": "test1@naver.com",
+  "password": "test1"
+}
+
+### @name 관리자 권한 부여
+@userId =2
+PATCH http://localhost:8080/admin/{{userId}}
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MUBuYXZlci5jb20iLCJyb2xlIjoiQURNSU4iLCJleHAiOjE3NDk3MjkxNTQsImlhdCI6MTc0OTcyNzM1NH0.YsMX9lVDijPSyEWMyMax2wppmxuwcP7oeaF1PCKjvVzTmt8YYArboDUvmboRoGFX2jwzBAocLfKqsb4iPjT2xw
