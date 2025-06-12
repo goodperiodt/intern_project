@@ -1,6 +1,8 @@
 package com.sparta.authservice.application.service;
 
 import com.sparta.authservice.application.dto.response.SignUpResponse;
+import com.sparta.authservice.common.exception.CustomException;
+import com.sparta.authservice.common.exception.ErrorCode;
 import com.sparta.authservice.domain.entity.User;
 import com.sparta.authservice.infrastructure.repository.UserRepositoryImpl;
 import com.sparta.authservice.infrastructure.security.JwtUtil;
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     private void isDuplicateEmail(SignUpRequest request) {
         if(userRepository.existsUserByEmail(request.getEmail()))
-            throw new IllegalArgumentException("이미 존재하는 아이디 입니다.");
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
     }
 
     @Override
@@ -69,7 +71,8 @@ public class UserServiceImpl implements UserService {
                 password,
                 foundUser.getPassword()
         );
-        if(!matches) throw new IllegalArgumentException("비밀번호를 다시 확인해주세요");
+        if(!matches)
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
 
     }
 }

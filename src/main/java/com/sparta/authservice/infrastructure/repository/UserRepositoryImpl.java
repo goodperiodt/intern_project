@@ -1,5 +1,7 @@
 package com.sparta.authservice.infrastructure.repository;
 
+import com.sparta.authservice.common.exception.CustomException;
+import com.sparta.authservice.common.exception.ErrorCode;
 import com.sparta.authservice.domain.entity.User;
 import com.sparta.authservice.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User findByUserEmail(String email) {
 
         if(!userJpaRepository.existsUserByEmail(email))
-            throw new IllegalArgumentException("아이디가 존재하지 않습니다.");
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
 
         return userJpaRepository.findUserByEmail(email);
     }
