@@ -3,6 +3,7 @@ package com.sparta.authservice.presentation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.authservice.application.dto.response.SignUpResponse;
 import com.sparta.authservice.application.service.UserServiceImpl;
+import com.sparta.authservice.presentation.dto.request.LoginRequest;
 import com.sparta.authservice.presentation.dto.request.SignUpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,5 +55,22 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email").value("test@example.com"))
                 .andExpect(jsonPath("$.nickname").value("tester"))
                 .andExpect(jsonPath("$.id").value(1));
+    }
+
+    @Test
+    @DisplayName("로그인 성공 테스트")
+    void loginTest() throws Exception {
+        // given
+        LoginRequest request = new LoginRequest("test@example.com", "password123");
+        String token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QG5hdmVyLmNvbSIsInJvbGUiOiJVU0VSIiwiZXhwIjoxNzQ5NzE5Mzg0LCJpYXQiOjE3NDk3MTc1ODR9.pEnp5tHuV5PC0AJUrbpNAUTMcj_hhytnfp28HHkaSmB1jBMtQ1l9hpACCt4qWGWH6nBaaoLnMNKxETQTzNzMBQ";
+
+        Mockito.when(userService.login(any(LoginRequest.class))).thenReturn(token);
+
+        // when & then
+        mockMvc.perform(post("/sign-in")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value(token));
     }
 }
