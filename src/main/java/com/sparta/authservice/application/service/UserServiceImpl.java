@@ -3,7 +3,7 @@ package com.sparta.authservice.application.service;
 import com.sparta.authservice.application.dto.response.SignUpResponse;
 import com.sparta.authservice.domain.entity.User;
 import com.sparta.authservice.infrastructure.repository.UserRepositoryImpl;
-import com.sparta.authservice.infrastructure.security.JwtTokenProvider;
+import com.sparta.authservice.infrastructure.security.JwtUtil;
 import com.sparta.authservice.presentation.dto.request.LoginRequest;
 import com.sparta.authservice.presentation.dto.request.SignUpRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +18,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepositoryImpl userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
 
     @Override
     @Transactional
     public SignUpResponse signUp(SignUpRequest request) {
+
+        isDuplicateEmail(request);
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
@@ -41,19 +43,33 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    private void isDuplicateEmail(SignUpRequest request) {
+        if(userRepository.existsUserByEmail(request.getEmail()))
+            throw new IllegalArgumentException("이미 존재하는 아이디 입니다.");
+    }
+
     @Override
     public String login(LoginRequest request) {
-        User foundUser = userRepository.findByUserEmail(request.getEmail());
-        matchesPassword(foundUser, request.getPassword());
 
-        return jwtTokenProvider.createAccessToken(
+        User foundUser = userRepository.findByUserEmail(request.getEmail());
+        matchesPassword(
+                foundUser,
+                request.getPassword()
+        );
+
+        return jwtUtil.createAccessToken(
                 foundUser.getEmail(),
                 foundUser.getRole()
         );
     }
 
     private void matchesPassword(User foundUser, String password) {
-        boolean matches = passwordEncoder.matches(password, foundUser.getPassword());
+
+        boolean matches = passwordEncoder.matches(
+                password,
+                foundUser.getPassword()
+        );
         if(!matches) throw new IllegalArgumentException("비밀번호를 다시 확인해주세요");
+
     }
 }
